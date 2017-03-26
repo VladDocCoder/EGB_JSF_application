@@ -1,0 +1,8 @@
+#surefire
+#Tue Mar 21 14:17:27 EET 2017
+maven.ext.class.path=C\:\\Program Files\\NetBeans 8.2\\java\\maven-nblib\\netbeans-eventspy.jar
+user.dir=D\:\\DMS_Vehicle_Survey_Coding_Challenge\\DMS_Vehicle_Survey_Project
+file.encoding=UTF-8
+localRepository=C\:\\Users\\User\\.m2\\repository
+netbeans.deploy=true
+basedir=D\:\\DMS_Vehicle_Survey_Coding_Challenge\\DMS_Vehicle_Survey_Project

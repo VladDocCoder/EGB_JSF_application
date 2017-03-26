@@ -1,0 +1,137 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                template="/WEB-INF/templates/template.xhtml">
+
+    <ui:define name="content">
+
+        <p:messages closable="true" autoUpdate="true" />
+
+        <h1 style="margin-bottom: 15px;">Vehicle Survey</h1>
+
+        <h:form id="f-upload" enctype="multipart/form-data">
+
+            <div class="panel panel-default" style="margin-bottom: 15px;">
+
+                <div class="panel-heading">
+                    <h3 class="panel-title">Settings</h3>
+                </div>
+
+                <div class="panel-body">
+                    <div class="row">
+
+                        <div class="col-sm-3">
+                            <div class="form-group">
+                                <h:outputLabel value="Road section speed limit (km/h)" for="speedLimit" />
+                                <h:inputText id="speedLimit" value="#{appBean.roadSection.speedLimit}" styleClass="form-control" label="Road section speed limit (km/h)">
+                                    <f:validateRequired />
+                                    <f:validateLongRange minimum="15" maximum="160" />
+                                </h:inputText>
+                                <p class="help-block">Not used in this release</p>
+                            </div>
+                        </div>
+
+                        <div class="col-sm-3">
+                            <div class="form-group">
+                                <label for="dataFile">Use external file with sensor data</label><br/>
+                                <p:fileUpload id="dataFile" value="#{appBean.file}" mode="simple" skinSimple="true" sizeLimit="10" invalidSizeMessage="Too large" />
+                                <p class="help-block">By default the embedded <a href="https://dl.dropboxusercontent.com/u/57070052/public_ref_data/AndrewsApp/Vehicle_Survey_Coding_Challenge_sample_data.txt" title="Download file with sample data" target="_blank">file with sample data</a> is used</p>
+                            </div>
+                        </div>
+
+                        <div class="col-sm-6">
+                            <ui:fragment rendered="#{empty appBean.file or appBean.file.size == 0}">
+                                <p class="bg-warning" style="padding: 15px;">
+                                    <b>Notes:</b> please, take into account that this is just a test app thus not all features were implemented as for real-word production application. 
+                                    Features like validation of uploaded file, etc, were not implemented.
+                                    <br/><b>Please, use only valid files with sensor data with this demo app. Thank you!</b>
+                                </p>
+                            </ui:fragment>                            
+                            <ui:fragment rendered="#{not empty appBean.file and appBean.file.size > 0}">
+                                <div class="form-group">
+                                    <label for="dataFile">Uploaded file details:</label><br/>
+                                    <p class="help-block">File name: #{appBean.file.fileName}</p>
+                                    <p class="help-block">File size: #{appBean.file.size} bytes</p>
+                                </div>
+                            </ui:fragment>
+                        </div>
+
+                    </div>
+
+                    <h:commandButton actionListener="#{appBean.initBean()}" value="Update settings" styleClass="btn btn-sm btn-success pull-right" />
+                    <h:commandButton actionListener="#{appBean.reset()}" immediate="true"  value="Reset application" styleClass="btn btn-sm btn-warning pull-right" style="margin-right: 10px;">
+                        <f:ajax execute="@this" resetValues="true" immediate="true" render="@all"/>
+                    </h:commandButton>
+
+                </div>
+            </div>
+
+        </h:form>
+
+        <h3 style="margin-top:35px;">Analytical results</h3>
+        <hr/>
+
+        <div class="row">
+            <div class="col-sm-12">
+                Total number of vehicles registered by sensors: #{appBean.roadSection.data.size()} <br/>
+                <br/>
+                Minimum registered speed: <h:outputText value="#{appBean.roadSection.stats.min}" converter="javax.faces.Integer" /> (km/h) <br/>
+                Average speed: <h:outputText value="#{appBean.roadSection.stats.mean}" converter="javax.faces.Integer" /> (km/h) <br/>
+                Maximum registered speed: <h:outputText value="#{appBean.roadSection.stats.max}" converter="javax.faces.Integer" /> (km/h) <br/>
+                <br/>
+            </div>
+        </div>
+        
+        <p class="bg-info" style="padding:15px;text-align: right;margin:10px 0 25px;">
+            Series of data are clickable in the graphs below
+        </p>
+
+        <div class="row" style="margin-bottom: 50px;">
+            <div class="col-sm-12">
+                <p:chart type="line" model="#{appBean.roadSection.carsByAllDaysChart}" style="height:300px;" responsive="true" />
+            </div>
+        </div>
+
+        <div class="row" style="margin-bottom: 50px;">
+            <div class="col-sm-12">
+                <p:chart type="line" model="#{appBean.roadSection.carsByDayChart}" style="height:300px;" responsive="true" />
+            </div>
+        </div>        
+
+        <div class="row" style="margin-bottom: 50px;">
+            <div class="col-sm-12">
+                <p:chart type="line" model="#{appBean.roadSection.carsByDirectionOverAllDays}" style="height:300px;" responsive="true" />
+            </div>
+        </div>
+
+        <div class="row" style="margin-bottom: 50px;">
+            <div class="col-sm-12">
+                <p:chart type="ohlc" model="#{appBean.roadSection.carsSpeedDistributionOverAllDays}" style="height:300px;" responsive="true" />
+            </div>
+        </div> 
+        
+        <div class="row" style="margin-bottom: 50px;">
+            <div class="col-sm-12">
+                <p:chart type="line" model="#{appBean.roadSection.carsBySpeedPerHourOfDay}" style="height:300px;" responsive="true" />
+            </div>
+        </div> 
+        
+         <div class="row">
+            <div class="col-sm-12">
+                Average distance between cars of 'A' direction per 1 hour of 1 day: <h:outputText value="#{appBean.roadSection.midleDifferrenceA_DirectionDistance}" converter="javax.faces.Float" /> (km) <br/>
+                Average distance between cars of 'B' direction per 1 hour of 1 day: <h:outputText value="#{appBean.roadSection.midleDifferrenceB_DirectionDistance}" converter="javax.faces.Float" /> (km) <br/>
+                <br/>
+            </div>
+        </div>
+        
+        <div class="row" style="margin-bottom: 50px;">
+            <div class="col-sm-12">
+                <p:chart type="line" model="#{appBean.roadSection.carsBySpeedOverAllDays}" style="height:300px;" responsive="true" />
+            </div>
+        </div> 
+
+    </ui:define>
+
+</ui:composition>
